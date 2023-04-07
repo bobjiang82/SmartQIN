@@ -168,8 +168,7 @@ int main()
 
     printf("%d\n", (int)strlen(song1[0]));
     // initializa curnotes
-    char curnotes[11];
-    int curleds[11];
+    char curnotes[11] = "          ";
     unsigned char curnotelen[2];
     int i=0;
     for (i=0; i<4; i++) {
@@ -182,23 +181,73 @@ int main()
     }
     // LED ON for the first notes
 
+    int ddid = 0;
     // loop xx cycles
     for (int i=0; i<strlen(song1[0]); i++) {
         // prepare LEDs to be ON
-        for (int j=0; j<4; j++) {
-            curnotes[j] += song1[j][i] - ' ';
-            curleds[j] = getledbynote(curnotes[j]);
+        // left hand
+        for (int j=0; j<2; j++) {
+            if (' ' != song1[j][i]) {
+                curnotes[j] += song1[j][i] - ' ';
+                curnotelen[0] = notelen1[0][i];
+            }
+            ddid = getdengdaibynote(curnotes[j]);
+            if (ddid)
+                leds[getledidbynote(curnotes[j])] = CRGB::Blue;
+            else
+                leds_1[getledidbynote(curnotes[j])] = CRGB::Blue;
         }
+        for (int j=2; j<4; j++) {
+            if (' ' != song1[j][i]) {
+                curnotes[j] += song1[j][i] - ' ';
+                curnotelen[1] = notelen1[1][i];
+            }
+            ddid = getdengdaibynote(curnotes[j]);
+            if (ddid)
+                leds[getledidbynote(curnotes[j])] = CRGB::Green;
+            else
+                leds_1[getledidbynote(curnotes[j])] = CRGB::Green;
+        }
+
         // LED ON
-        LED_ON(curleds);
+        LED_ON();
+        // FastLED.show();
         sleep(0.5);
+        // delay(delayspernote);
+
+        // update remaining time in curnotelen[]
+        if (curnotelen[0] > 0)
+            curnotelen[0] -= 1;
+        if (curnotelen[1] > 0)
+            curnotelen[1] -= 1;
 
         // prepare LEDs to be OFF
-        // update remaining time in curnotelen[]
-        curnotelen[0] -= 1;
-        curnotelen[1] -= 1;
+        if (0 == curnotelen[0]) {
+            for (int j=0; j<2; j++) {
+                curnotes[j] = ' ';
+                ddid = getdengdaibynote(curnotes[j]);
+                if (ddid)
+                    leds[getledidbynote(curnotes[j])] = CRGB::Black;
+                else
+                    leds_1[getledidbynote(curnotes[j])] = CRGB::Black;
+            }
+        }
+        if (0 == curnotelen[1]) {
+            for (int j=2; j<4; j++) {
+                curnotes[j] = ' ';
+                ddid = getdengdaibynote(curnotes[j]);
+                if (ddid)
+                    leds[getledidbynote(curnotes[j])] = CRGB::Black;
+                else
+                    leds_1[getledidbynote(curnotes[j])] = CRGB::Black;
+            }
+        }
 
-        song1[][]
+        // LED OFF
+        LED_OFF();
+        // FastLED.show();
+        sleep(0.5);
+        // delay(delayspernote);
     }
 
 
